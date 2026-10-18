@@ -1,0 +1,31 @@
+---
+title: page
+description: Record browser page views.
+---
+
+## Signatures
+
+```ts
+analytics.page(name?, properties?, options?, callback?)
+analytics.page(category, name, properties?, options?, callback?)
+```
+
+`category` groups related pages; `name` identifies the page; `properties` contains safe page metadata; `options` contains identity, context, and integrations.
+
+```ts
+analytics.page('Marketing', 'Pricing', { planCount: 3 })
+```
+
+Use manual `page` calls for route changes that automatic navigation does not cover. Do not put query-string secrets, user-entered search text, or sensitive page content in properties.
+
+```json
+{
+  "type": "page",
+  "category": "Marketing",
+  "name": "Pricing",
+  "properties": { "planCount": 3 },
+  "messageId": "generated-by-sdk"
+}
+```
+
+The page resolver also accepts `page(properties)`, `page(name, properties)`, and `page(category, name, properties, options, callback)`.

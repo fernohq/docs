@@ -1,0 +1,23 @@
+---
+title: screen
+description: Record screen views with the browser SDK.
+---
+
+Use `screen` for app-like screens or views where `page` is not the clearest semantic name.
+
+```ts
+await analytics.screen('Account', 'Billing', {
+  tab: 'invoices',
+})
+```
+
+Arguments follow the category/name/properties/options/callback pattern as `page`. Track safe state metadata, not visible user-entered content.
+
+```json
+{
+  "type": "screen",
+  "category": "Account",
+  "name": "Billing",
+  "properties": { "tab": "invoices" }
+}
+```

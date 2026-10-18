@@ -1,0 +1,34 @@
+---
+title: group
+description: Associate a user with an organization or account.
+---
+
+## Signature
+
+```ts
+analytics.group(groupId, traits?, options?, callback?)
+```
+
+- `groupId`: required organization, workspace, or account ID.
+- `traits`: optional safe group attributes.
+- `options`: optional identity, context, timestamp, and integration settings.
+- `callback`: optional dispatch callback.
+
+```ts
+analytics.group('workspace-456', {
+  plan: 'business',
+  seatCount: 12,
+  industry: 'software',
+})
+```
+
+Use `group` when organization-level analysis matters. Do not use it to store arbitrary customer input.
+
+```json
+{
+  "type": "group",
+  "groupId": "workspace-456",
+  "traits": { "plan": "business", "seatCount": 12, "industry": "software" },
+  "userId": "user-123"
+}
+```

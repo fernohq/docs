@@ -1,0 +1,37 @@
+---
+title: Security
+description: Use Ferno's SDK protections and minimize event data.
+---
+
+## Browser protections
+
+- Instrumentation is opt-in.
+- Password, input, textarea, and select values are not captured as element text.
+- `[data-ph-mask]` and `.ph-mask` protect sensitive DOM regions.
+- Element text, IDs, classes, and paths are bounded.
+- Exception signatures are rate-limited.
+- Heatmaps send points and metadata, not dashboard aggregates.
+- Client persistence can be disabled with `disableClientPersistence`.
+- Cookies and storage can be configured.
+
+```html
+<div data-ph-mask>
+  <span>Private account content</span>
+</div>
+```
+
+## Node protections
+
+- Bearer authorization is the default.
+- Write keys should be stored in environment variables or a secrets manager.
+- Bearer write keys are sent in authorization headers, not event bodies.
+- Retry, backoff, and request-timeout settings limit failed-request behavior.
+- Custom HTTP clients can enforce network and proxy policy.
+
+## Application-level guidance
+
+SDK masking does not replace data minimization. Never send passwords, secrets, access tokens, private keys, authentication codes, card numbers, CVVs, bank details, payment tokens, or raw provider responses.
+
+Avoid user-entered content by default: form values, search queries, chat messages, prompts, free-text fields, raw sensitive URLs, and exception messages containing request data.
+
+Prefer IDs, booleans, enums, counts, coarse categories, and status codes. Review browser and Node payloads before production and use separate project keys for environments.

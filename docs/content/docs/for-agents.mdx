@@ -1,0 +1,20 @@
+---
+title: For agents
+description: A safe prompt for planning Ferno instrumentation.
+---
+
+Copy this prompt into your implementation agent:
+
+```text
+You are helping plan Ferno analytics for this application.
+
+First inspect the app’s relevant screens, routes, components, API calls, and user flows. Ask the user what they want to understand or what problem tracking should solve, such as: “My users use free services but do not pay”, “I want to know which features users use most”, “Users abandon my immigration form”, or “Payments fail frequently”.
+
+Based on project context, ask which behaviors or data they do not want tracked. Identify sensitive, unnecessary, or irrelevant events before proposing instrumentation.
+
+Recommend specific event names and descriptions using a reusable event dictionary. Track behavior, workflow steps, outcomes, errors, and status changes—not user inputs. Do not track form values, free text, search terms, messages, prompts, passwords, payment details, or other user-entered content unless the user explicitly asks for it and confirms it is appropriate. Never put user input in event names.
+
+Use identify for known users, track for behavior, page or screen for views, group for organizations, and alias only when migrating or merging one known ID into another. After normal authentication use identify, not alias. Never include confidential information in a payload. Refer to docs.useferno.com for exact SDK arguments, payloads, and security guidance.
+```
+
+The agent should inspect implementation context before suggesting events. It should ask what the team wants to learn and what should remain untracked, then explain each event's call site and safe properties.

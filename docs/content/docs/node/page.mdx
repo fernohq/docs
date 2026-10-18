@@ -1,0 +1,26 @@
+---
+title: page
+description: Record server-rendered page views.
+---
+
+```ts
+analytics.page({
+  userId: 'user-123',
+  category: 'Marketing',
+  name: 'Pricing',
+  properties: { planCount: 3 },
+  context: { source: 'web-server' },
+})
+```
+
+`PageParams` accepts optional `category`, `name`, `properties`, `timestamp`, `context`, `integrations`, and `messageId`, plus `userId` or `anonymousId`. Keep URLs and page properties free of secrets and raw user input.
+
+```json
+{
+  "type": "page",
+  "category": "Marketing",
+  "name": "Pricing",
+  "properties": { "planCount": 3 },
+  "userId": "user-123"
+}
+```

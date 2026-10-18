@@ -1,0 +1,90 @@
+---
+title: Event standards
+description: Design specific, reusable events for behavior analysis.
+---
+
+## Name the behavior and workflow step
+
+Event names must be specific enough to explain what happened and where it happened. Include the workflow, feature, or step when it helps explain drop-off.
+
+Good names:
+
+- `Opened Education Step of Immigration form`
+- `Filled Education Step of Immigration form`
+- `Started filling UK immigration report`
+- `Opened checkout page`
+- `Attempted payment on checkout page`
+- `Completed payment on checkout page`
+- `Payment failed on checkout page`
+
+Avoid `clicked`, `signup`, `button_clicked`, `form_input`, or `payment`.
+
+Specific does not mean collecting input. Describe the action and state, never the value the user entered.
+
+## Reuse an event dictionary
+
+Declare names and descriptions once, then reuse them:
+
+```ts
+export const EVENTS = {
+  checkoutOpened: {
+    name: 'Opened checkout page',
+    description: 'User entered checkout after reviewing the order summary.',
+  },
+  paymentAttempted: {
+    name: 'Attempted payment on checkout page',
+    description: 'User submitted payment details from the checkout page.',
+  },
+  paymentSucceeded: {
+    name: 'Completed payment on checkout page',
+    description: 'The payment provider confirmed a successful transaction.',
+  },
+  paymentFailed: {
+    name: 'Payment failed on checkout page',
+    description: 'The payment provider rejected or failed the transaction.',
+  },
+} as const
+```
+
+This prevents spelling drift and makes event definitions reusable.
+
+## Track behavior, not input
+
+Safe properties describe actions, states, outcomes, counts, categories, and coarse identifiers:
+
+```ts
+analytics.track('Completed education form step', {
+  step: 3,
+  stepName: 'education',
+  validationErrorCount: 0,
+})
+```
+
+Do not send form values, search terms, chat messages, prompts, passwords, payment details, or arbitrary free text by default. Do not put user input in an event name. Only track a particular input when the user explicitly requests it and confirms that it is appropriate.
+
+## Payment analysis
+
+Send events when the user enters checkout, attempts payment, and receives a success or failure result.
+
+```ts
+analytics.track(EVENTS.checkoutOpened.name, { plan: 'pro' })
+analytics.track(EVENTS.paymentAttempted.name, { plan: 'pro', provider: 'stripe' })
+analytics.track(EVENTS.paymentFailed.name, {
+  plan: 'pro',
+  provider: 'stripe',
+  failureCode: 'card_declined',
+})
+```
+
+Use status codes and categories, never card numbers, CVVs, bank details, payment tokens, or raw provider responses.
+
+## Forms and workflows
+
+Useful form events include opened step, completed step, continued, validation failed, and abandoned. Their properties should identify the step and outcome, not the answer.
+
+```ts
+analytics.track('Validation failed on Education Step of Immigration form', {
+  step: 3,
+  errorCount: 2,
+})
+```

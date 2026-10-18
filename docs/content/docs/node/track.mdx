@@ -1,0 +1,49 @@
+---
+title: track
+description: Record trusted server-side behavior and outcomes.
+---
+
+## Signature
+
+```ts
+analytics.track(params, callback?)
+```
+
+`params` contains:
+
+- `event`: required event name.
+- `userId` or `anonymousId`: at least one is required.
+- `properties`: optional behavior/outcome data.
+- `context`: optional extra context.
+- `timestamp`: optional event time.
+- `integrations`: optional destination controls.
+- `messageId`: optional deduplication ID.
+- `callback`: optional callback after dispatch processing.
+
+```ts
+analytics.track({
+  userId: 'user-123',
+  event: 'Completed payment on checkout page',
+  properties: {
+    plan: 'pro',
+    amount: 4900,
+    currency: 'USD',
+    provider: 'stripe',
+  },
+})
+```
+
+Use Node `track` for authoritative backend outcomes such as payment success, subscription activation, report generation, or account changes. Do not send raw request bodies, form values, secrets, payment credentials, or provider responses.
+
+```json
+{
+  "type": "track",
+  "event": "Completed payment on checkout page",
+  "userId": "user-123",
+  "properties": { "plan": "pro", "amount": 4900, "currency": "USD" },
+  "context": { "source": "billing-service" },
+  "messageId": "payment-event-123"
+}
+```
+
+The callback is optional and receives the dispatch context. `messageId` can be supplied when the application controls deduplication; otherwise the SDK generates one.

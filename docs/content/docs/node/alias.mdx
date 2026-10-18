@@ -1,0 +1,30 @@
+---
+title: alias
+description: Migrate events from one known ID to another known ID.
+---
+
+```ts
+analytics.alias({
+  userId: 'canonical-user-123',
+  previousId: 'legacy-user-456',
+})
+```
+
+Ferno reassigns all previous events for `previousId` to `userId`. Use this only for known-ID migration or merging duplicate known accounts:
+
+- Legacy ID to canonical ID migration.
+- Duplicate customer-record merge.
+- Account-model consolidation.
+- Database import or identity repair.
+
+Do not call `alias` after ordinary authentication or when a user switches accounts. Call `identify` for the authenticated account instead. Alias would incorrectly merge separate users.
+
+```json
+{
+  "type": "alias",
+  "userId": "canonical-user-123",
+  "previousId": "legacy-user-456"
+}
+```
+
+Optional fields are `context`, `timestamp`, `integrations`, and `messageId`. The callback is the second argument.

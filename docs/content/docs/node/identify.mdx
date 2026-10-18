@@ -1,0 +1,24 @@
+---
+title: identify
+description: Associate server-side behavior with a known user.
+---
+
+```ts
+analytics.identify({
+  userId: 'user-123',
+  traits: { plan: 'pro', accountState: 'active' },
+  context: { source: 'auth-service' },
+})
+```
+
+`userId` or `anonymousId` is required. Use `identify` after login, signup, account changes, and safe trait updates. Do not send passwords, tokens, raw profile fields, or authentication payloads.
+
+```json
+{
+  "type": "identify",
+  "userId": "user-123",
+  "traits": { "plan": "pro", "accountState": "active" }
+}
+```
+
+Optional fields are `context`, `timestamp`, `integrations`, and `messageId`. The callback, when supplied as the second argument, runs after dispatch processing.

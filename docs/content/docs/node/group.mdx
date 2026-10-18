@@ -1,0 +1,25 @@
+---
+title: group
+description: Associate a user with an organization or account.
+---
+
+```ts
+analytics.group({
+  userId: 'user-123',
+  groupId: 'workspace-456',
+  traits: { plan: 'business', seatCount: 12 },
+})
+```
+
+`groupId` and either `userId` or `anonymousId` are required. Use safe organization attributes such as plan, seat count, industry, or lifecycle state.
+
+Optional fields are `context`, `timestamp`, `integrations`, and `messageId`. The callback is the second argument.
+
+```json
+{
+  "type": "group",
+  "groupId": "workspace-456",
+  "userId": "user-123",
+  "traits": { "plan": "business", "seatCount": 12 }
+}
+```

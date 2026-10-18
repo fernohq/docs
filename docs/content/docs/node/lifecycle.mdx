@@ -1,0 +1,29 @@
+---
+title: Flushing and shutdown
+description: Deliver queued Node events before a process exits.
+---
+
+## `flush`
+
+```ts
+await analytics.flush({ timeout: 5000 })
+```
+
+`timeout` is the maximum wait in milliseconds. `close: true` stops new events from entering the pipeline.
+
+## `closeAndFlush`
+
+```ts
+await analytics.closeAndFlush({ timeout: 5000 })
+```
+
+Use this in serverless handlers, CLI commands, workers, and graceful shutdown hooks. It flushes queued events, waits for event callbacks, and closes the pipeline.
+
+```ts
+process.once('SIGTERM', async () => {
+  await analytics.closeAndFlush()
+  process.exit(0)
+})
+```
+
+The SDK batches at `flushAt` events or `flushInterval` milliseconds, retries transient failures, and aborts a flush that exceeds its timeout. Calls after close are ignored.

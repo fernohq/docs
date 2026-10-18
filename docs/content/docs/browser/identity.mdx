@@ -1,0 +1,24 @@
+---
+title: Identity, persistence, and reset
+description: Control anonymous and known browser identity.
+---
+
+The browser SDK persists identity by default using cookies and local storage, with memory fallback behavior. `user()` and `group()` read current state. `reset()` clears current user and group state.
+
+```ts
+analytics.reset()
+analytics.identify('user-789', { plan: 'free' })
+```
+
+Use this when a user logs out and another account logs in on the same browser. Do not alias the two accounts.
+
+```ts
+AnalyticsBrowser.load(
+  { writeKey: 'ferno_pk_example' },
+  { disableClientPersistence: true },
+)
+```
+
+Choose persistence settings that match consent and privacy requirements.
+
+`user()` and `group()` return the current identity state. The buffered browser instance returns promises for these getters; the initialized analytics instance returns the state directly.

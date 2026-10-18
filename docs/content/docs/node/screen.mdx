@@ -1,0 +1,27 @@
+---
+title: screen
+description: Record server-side app screen views.
+---
+
+```ts
+analytics.screen({
+  userId: 'user-123',
+  category: 'Account',
+  name: 'Billing',
+  properties: { tab: 'invoices' },
+})
+```
+
+Use `screen` for app-like views. At least one of `userId` or `anonymousId` is required.
+
+The method accepts the same page fields: `category`, `name`, `properties`, `timestamp`, `context`, `integrations`, and `messageId`, plus an optional callback.
+
+```json
+{
+  "type": "screen",
+  "category": "Account",
+  "name": "Billing",
+  "properties": { "tab": "invoices" },
+  "userId": "user-123"
+}
+```

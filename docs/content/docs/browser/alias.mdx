@@ -1,0 +1,42 @@
+---
+title: alias
+description: Migrate events from one known ID to another known ID.
+---
+
+## Signature
+
+```ts
+analytics.alias(newKnownId, oldKnownId?, options?, callback?)
+```
+
+- `newKnownId`: canonical known user ID.
+- `oldKnownId`: previous known user ID.
+- `options`: optional context, timestamp, integrations, or message ID.
+- `callback`: optional dispatch callback.
+
+## Backend behavior
+
+Ferno reassigns all previous events associated with the old known ID to the new known ID. Alias is an identity migration or merge operation.
+
+Use it for duplicate customer-record merges, legacy-to-canonical ID migration, account-model consolidation, database imports, or identity repair.
+
+## Do not use after authentication
+
+Do not call `alias` after routine login. Call `identify` instead. If users switch accounts on one browser, reset the previous browser identity as appropriate, then identify the newly authenticated account. Alias would incorrectly merge separate accounts.
+
+```ts
+// Correct after login
+analytics.identify('newly-authenticated-user', { plan: 'free' })
+
+// Migration only
+analytics.alias('canonical-user-123', 'legacy-user-456')
+```
+
+```json
+{
+  "type": "alias",
+  "userId": "canonical-user-123",
+  "previousId": "legacy-user-456",
+  "messageId": "generated-by-sdk"
+}
+```

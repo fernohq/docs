@@ -1,0 +1,51 @@
+# Ferno SDK documentation
+
+Ferno provides browser and Node SDKs for product analytics. Use the SDKs to track user behavior, workflow steps, feature usage, identity, organizations, and trusted outcomes.
+
+## Documentation
+
+- https://docs.useferno.com/docs/getting-started
+- https://docs.useferno.com/docs/event-standards
+- https://docs.useferno.com/docs/browser/setup
+- https://docs.useferno.com/docs/node/setup
+- https://docs.useferno.com/docs/security
+- https://docs.useferno.com/docs/for-agents
+
+## SDKs
+
+- Browser package: `@fernohq/analytics-next`
+- Node package: `@fernohq/analytics-node`
+- Browser methods: `track`, `identify`, `alias`, `page`, `screen`, `group`, `reset`
+- Node methods: `track`, `identify`, `alias`, `page`, `screen`, `group`, `flush`, `closeAndFlush`
+
+## Method rules
+
+- Use `track` for meaningful behavior, workflow steps, feature usage, outcomes, errors, and payment states.
+- Use `identify` after signup, login, authentication refresh, or safe trait changes.
+- Use `alias` only to migrate or merge one known ID into another known ID. Ferno reassigns all previous events from the old ID to the new ID. Do not use alias after normal authentication or when switching accounts; use identify instead.
+- Use `page` for web page views and `screen` for app-like views.
+- Use `group` for organizations, workspaces, or accounts.
+- Use `reset` when clearing browser identity before another account uses the same browser.
+- Node events require `userId` or `anonymousId`.
+- Flush Node events before short-lived processes exit.
+
+## Event design
+
+Event names must be specific and describe behavior and workflow context, for example `Opened Education Step of Immigration form`, `Filled Education Step of Immigration form`, or `Started filling UK immigration report`.
+
+Declare an event dictionary containing reusable names and descriptions. For payment analysis track checkout entry, payment attempt, and payment success or failure.
+
+Track behavior, not user input. Do not track form values, search terms, chat messages, prompts, passwords, payment details, or arbitrary free text unless the user explicitly requests it and confirms it is appropriate. Never place user input in event names.
+
+## Security
+
+- Browser instrumentation is opt-in.
+- Password, input, textarea, and select values are not captured as element text.
+- Use `data-ph-mask` or `.ph-mask` for sensitive DOM regions.
+- Browser persistence can be disabled.
+- Node uses Bearer authorization by default; keep write keys in environment variables or a secrets manager.
+- Never send passwords, secrets, tokens, private keys, authentication codes, card numbers, CVVs, bank details, payment tokens, or raw provider responses.
+
+## Agent guidance
+
+Before proposing instrumentation, inspect the application’s screens, routes, components, API calls, and user flows. Ask what the user wants to understand and which events or data they do not want tracked. Recommend safe, behavior-focused events and refer to https://docs.useferno.com for exact arguments and payloads.

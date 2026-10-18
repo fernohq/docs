@@ -1,8 +1,8 @@
 {
   "$schema": "./node_modules/@umami/shiso/docs.schema.json",
   "theme": "shiso",
-  "name": "My Docs",
-  "description": "Documentation for my project.",
+  "name": "Ferno Docs",
+  "description": "Ferno SDK documentation.",
   "logo": "/logo.svg",
   "favicon": "/logo.svg",
   "contextual": {
@@ -13,7 +13,38 @@
       {
         "group": "Getting started",
         "collapsible": false,
-        "pages": [{ "page": "index", "title": "Introduction" }, "getting-started"]
+        "pages": ["index", "getting-started", "event-standards"]
+      },
+      {
+        "group": "Browser SDK",
+        "pages": [
+          "browser/setup",
+          "browser/track",
+          "browser/identify",
+          "browser/alias",
+          "browser/page",
+          "browser/screen",
+          "browser/group",
+          "browser/identity",
+          "browser/instrumentation"
+        ]
+      },
+      {
+        "group": "Node SDK",
+        "pages": [
+          "node/setup",
+          "node/track",
+          "node/identify",
+          "node/alias",
+          "node/page",
+          "node/screen",
+          "node/group",
+          "node/lifecycle"
+        ]
+      },
+      {
+        "group": "Security and agents",
+        "pages": ["security", "for-agents"]
       }
     ]
   }

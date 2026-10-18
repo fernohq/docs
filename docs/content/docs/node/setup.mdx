@@ -1,0 +1,38 @@
+---
+title: Setup and configuration
+description: Initialize Ferno's Node SDK.
+---
+
+## Install
+
+```bash
+npm install @fernohq/analytics-node
+```
+
+## Initialize
+
+```ts
+import { Analytics } from '@fernohq/analytics-node'
+
+const analytics = new Analytics({
+  writeKey: process.env.FERNO_WRITE_KEY!,
+  host: process.env.FERNO_API_URL ?? 'https://data.useferno.com',
+  path: '/events',
+  authMode: 'bearer',
+})
+```
+
+Settings:
+
+- `writeKey`: required project key.
+- `host`: API host; defaults to Ferno's data host.
+- `path`: API path; defaults to `/events`.
+- `authMode`: `bearer` or legacy `segment-basic`.
+- `flushAt`: events per batch; default 15.
+- `flushInterval`: automatic flush delay; default 10 seconds.
+- `maxRetries`: retry count; default 10.
+- `httpRequestTimeout`: request timeout.
+- `disable`: make all calls no-ops.
+- `httpClient`: custom fetch-compatible client or HTTP client.
+
+Keep `writeKey` in environment variables or a secrets manager.

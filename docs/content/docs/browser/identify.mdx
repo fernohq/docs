@@ -1,0 +1,37 @@
+---
+title: identify
+description: Associate browser behavior with a known user.
+---
+
+## Signature
+
+```ts
+analytics.identify(userId?, traits?, options?, callback?)
+```
+
+- `userId`: optional string or number; persisted ID is used when omitted.
+- `traits`: optional safe user attributes.
+- `options`: optional context, timestamp, integrations, or anonymous ID.
+- `callback`: optional dispatch callback.
+
+Call `identify` after signup, login, authentication refresh, or a meaningful trait update. It is the normal method after authentication.
+
+```ts
+analytics.identify('user-123', {
+  plan: 'pro',
+  accountState: 'active',
+})
+```
+
+Do not send passwords, access tokens, raw profile form values, or unnecessary personal data.
+
+```json
+{
+  "type": "identify",
+  "userId": "user-123",
+  "traits": { "plan": "pro", "accountState": "active" },
+  "messageId": "generated-by-sdk"
+}
+```
+
+For anonymous-to-known behavior, use `identify`. For known-ID migration, use `alias`.

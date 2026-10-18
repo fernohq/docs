@@ -1,0 +1,77 @@
+---
+title: track
+description: Record meaningful user behavior in the browser.
+---
+
+## Signature
+
+```ts
+analytics.track(eventName, properties?, options?, callback?)
+analytics.track({ event, properties }, options?, callback?)
+```
+
+- `eventName` or `event`: required string.
+- `properties`: optional plain object describing behavior or outcome.
+- `options`: optional object containing `userId`, `anonymousId`, `context`, `timestamp`, `integrations`, `messageId`, or extra context fields.
+- `callback`: optional function receiving the dispatched context.
+
+The object form is also supported. `properties` defaults to `{}`. A missing event name throws `Event missing`.
+
+## When to call
+
+Call `track` when a meaningful action occurs: a workflow step opens or completes, a feature is used, a payment is attempted, or an outcome occurs.
+
+Do not call it for every click or keystroke unless opt-in instrumentation is intended. Do not send user-entered content.
+
+```ts
+analytics.track('Completed education form step', {
+  step: 3,
+  stepName: 'education',
+  validationErrorCount: 0,
+})
+```
+
+## Payment funnel
+
+```ts
+analytics.track('Opened checkout page', { plan: 'pro' })
+analytics.track('Attempted payment on checkout page', {
+  plan: 'pro',
+  provider: 'stripe',
+})
+analytics.track('Payment failed on checkout page', {
+  plan: 'pro',
+  provider: 'stripe',
+  failureCode: 'card_declined',
+})
+```
+
+Use a backend event for authoritative payment success when possible.
+
+## Options example
+
+```ts
+await analytics.track(
+  'Opened pricing page',
+  { source: 'navigation' },
+  {
+    context: { page: { path: '/pricing', title: 'Pricing' } },
+    integrations: { All: true },
+  },
+)
+```
+
+## Normalized payload
+
+```json
+{
+  "type": "track",
+  "event": "Completed education form step",
+  "properties": { "step": 3, "stepName": "education" },
+  "userId": "user-123",
+  "context": { "page": { "path": "/immigration" } },
+  "messageId": "generated-by-sdk"
+}
+```
+
+Never include passwords, secrets, tokens, card data, raw form values, search queries, messages, or prompts.

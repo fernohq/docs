@@ -1,0 +1,219 @@
+---
+title: Browser instrumentation
+description: Opt-in autocapture, navigation, exceptions, and heatmaps.
+---
+
+Instrumentation is disabled by default and uses `track` internally.
+
+```ts
+AnalyticsBrowser.load(
+  { writeKey: 'ferno_pk_example' },
+  {
+    instrumentation: {
+      autocapture: true,
+      rageClicks: { enabled: true, count: 3, timeout: 1000, distance: 30 },
+      deadClicks: true,
+      navigation: { enabled: true, hash: true },
+      exceptions: { enabled: true, console: false },
+      heatmaps: { enabled: true, flushInterval: 10000 },
+    },
+  },
+)
+```
+
+Generated event names are `autocapture`, `rage_click`, `dead_click`, `page_view`, `page_leave`, `exception`, and `heatmap`.
+
+Runtime controls include `startInstrumentation`, `stopInstrumentation`, and start/stop methods for each feature.
+
+Each option accepts `true`/`false` or an object with `enabled`. An object lets you tune the feature. All options default to disabled.
+
+## `autocapture`
+
+An autocapture event is an automatically generated Ferno `track` event for a click on the page. Your application does not need to call `analytics.track`; the instrumentation runtime listens for document clicks and sends an event named `autocapture`.
+
+Use autocapture to discover broad interaction patterns, such as which controls or page regions users click. Use explicit `track` calls when the action has business meaning or needs a stable event name, such as `Completed checkout payment` or `Opened Education Step of Immigration form`.
+
+Autocapture does not know the intended meaning of a click. It records the clicked element and its page position, so it should not replace explicit product events for conversion funnels, payment outcomes, form completion, or other important workflows.
+
+```ts
+autocapture: true
+// or
+autocapture: { enabled: true }
+```
+
+Example event:
+
+```json
+{
+  "type": "track",
+  "event": "autocapture",
+  "properties": {
+    "url": "https://app.example.com/pricing",
+    "viewport": { "width": 1440, "height": 900 },
+    "document": { "width": 1440, "height": 1800 },
+    "coordinates": {
+      "x": 720,
+      "y": 420,
+      "documentX": 720,
+      "documentY": 420,
+      "offsetX": 18,
+      "offsetY": 12
+    },
+    "element": {
+      "tag": "button",
+      "id": "start-trial",
+      "role": "button",
+      "type": "button",
+      "path": "main > section > button"
+    }
+  }
+}
+```
+
+Properties:
+
+- `url`: current page URL.
+- `viewport`: viewport width and height.
+- `document`: document width and height.
+- `coordinates`: viewport coordinates, document coordinates, and element offsets.
+- `element`: bounded element fingerprint containing tag, ID, classes, role, name, type, path, and safe text where allowed.
+
+## `rageClicks`
+
+Tracks repeated clicks or touches on the same non-interactive element as `rage_click`. This helps identify users repeatedly trying an element that appears unresponsive.
+
+```ts
+rageClicks: {
+  enabled: true,
+  count: 3,
+  timeout: 1000,
+  distance: 30,
+}
+```
+
+Properties:
+
+- `enabled`: turns tracking on.
+- `count`: matching clicks required; default `3`.
+- `timeout`: time window in milliseconds; default `1000`.
+- `distance`: maximum pointer distance in pixels; default `30`.
+- Event properties otherwise use the same URL, viewport, coordinates, document, and element fields as `autocapture`.
+
+## `deadClicks`
+
+Tracks clicks or touches on a non-interactive element where no DOM child change is observed shortly afterward as `dead_click`.
+
+```ts
+deadClicks: {
+  enabled: true,
+  observationWindow: 300,
+}
+```
+
+Properties:
+
+- `enabled`: turns tracking on.
+- `observationWindow`: milliseconds to wait for a DOM child change; default `300`.
+- Event properties use the same URL, viewport, coordinates, document, and element fields as `autocapture`.
+
+This is a heuristic, not proof that the product action failed. Use explicit product events for authoritative success or failure states.
+
+## `navigation`
+
+Tracks client-side route transitions as `page_view` and the previous route as `page_leave`.
+
+```ts
+navigation: {
+  enabled: true,
+  hash: true,
+}
+```
+
+Properties on `page_view`:
+
+- `url`: new URL.
+- `navigationType`: `pushState`, `replaceState`, `popstate`, or `hashchange`.
+- `previousPageviewId`: previous page-view identifier when available.
+- `previousPathname`: previous route pathname.
+- `uTurn`: whether the new pathname equals the previous pathname.
+- `viewport`: current viewport dimensions.
+
+Properties on `page_leave`:
+
+- `url`: URL being left.
+- `previousPageviewId`: page-view identifier when available.
+- `previousPathname`: route pathname being left.
+- `duration`: time spent on the page in milliseconds.
+- `scroll`: current horizontal and vertical scroll position.
+- `viewport`: viewport dimensions.
+
+- `hash`: whether hash changes are tracked; default `true`.
+
+Navigation instrumentation observes history changes, `popstate`, optional `hashchange`, and `pagehide`. It does not call the manual `page` method.
+
+## `exceptions`
+
+Tracks uncaught browser errors, unhandled promise rejections, and optionally `console.error` calls as `exception`.
+
+```ts
+exceptions: {
+  enabled: true,
+  console: false,
+}
+```
+
+Properties:
+
+- `name`: error name.
+- `message`: error message, limited to 1,000 characters.
+- `stack`: stack trace, limited to 4,000 characters.
+- `source`: `window.error`, `unhandledrejection`, or `console.error`.
+- `url`: current page URL.
+- `timestamp`: ISO timestamp.
+- `console`: when `true`, also observes `console.error`; default `false`.
+
+Identical exception signatures are limited to five events per 60 seconds. Sanitize error messages and stack traces in the application if they may contain request data, user input, tokens, or other confidential information.
+
+## `heatmaps`
+
+Collects click coordinates into batches and sends them as `heatmap` events. It tracks where clicks occur, not the content entered into a page.
+
+```ts
+heatmaps: {
+  enabled: true,
+  flushInterval: 10000,
+  maxPoints: 500,
+}
+```
+
+Properties:
+
+- `points`: an array of click-point objects.
+- `flushInterval`: batch interval in milliseconds; default `10000`.
+- `maxPoints`: flush threshold; default `500`.
+
+Each point contains:
+
+- `url`.
+- `type`, currently `click`.
+- Viewport and document coordinates: `x`, `y`, `documentX`, `documentY`.
+- Viewport and document dimensions.
+- `scrollX` and `scrollY`.
+- `fixed` and `sticky` positioning flags.
+- `element`: bounded element fingerprint.
+- `offsetX` and `offsetY` within the element.
+- ISO `timestamp`.
+
+Points flush when the interval expires, the maximum is reached, the document becomes hidden, or the page unloads. Heatmap preview messages validate the source window, origin, nonce, project, and normalized URL.
+
+## Security and data minimization
+
+Instrumentation is behavior-focused. Password, input, textarea, and select values are not captured as element text. `data-ph-mask` and `.ph-mask` protect sensitive DOM regions, including descendants. Add masking attributes to sensitive regions and review generated metadata before enabling instrumentation.
+
+```html
+<div data-ph-mask>
+  <span>Private account content</span>
+</div>
+```
+
+Instrumentation does not replace explicit event design. Never send passwords, secrets, tokens, payment details, form values, search terms, messages, prompts, or other user-entered content unless it was specifically requested and approved.

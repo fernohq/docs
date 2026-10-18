@@ -1,33 +1,54 @@
 ---
 title: Getting started
-description: Make your first changes to your Shiso site.
+description: Install Ferno and send your first safe event.
 ---
 
-## Add a page
+## Browser
 
-Create a Markdown or MDX file under `content/docs`:
-
-```mdx
----
-title: API reference
-description: Learn how to use the API.
----
-
-Your content goes here.
+```bash
+npm install @fernohq/analytics-next
 ```
 
-## Configure navigation
+```ts
+import { AnalyticsBrowser } from '@fernohq/analytics-next'
 
-Add the page path to a group in `docs.json`:
+export const analytics = AnalyticsBrowser.load({
+  writeKey: import.meta.env.VITE_FERNO_WRITE_KEY,
+})
 
-```json
-{
-  "group": "Getting started",
-  "pages": ["index", "getting-started", "api-reference"]
-}
+analytics.track('Opened pricing page', { source: 'navigation' })
 ```
 
-## Build for production
+The browser key is intended for client-side use. Do not put a secret server credential in browser code.
+
+## Node
+
+```bash
+npm install @fernohq/analytics-node
+```
+
+```ts
+import { Analytics } from '@fernohq/analytics-node'
+
+const analytics = new Analytics({ writeKey: process.env.FERNO_WRITE_KEY! })
+analytics.track({
+  userId: 'user-123',
+  event: 'Completed checkout payment',
+  properties: { plan: 'pro', currency: 'USD' },
+})
+await analytics.closeAndFlush()
+```
+
+Keep Node keys in environment variables or a secrets manager.
+
+## First instrumentation checklist
+
+1. Write the business question the events should answer.
+2. Define an event dictionary with stable names and descriptions.
+3. Track behavior and outcomes, not form values or free text.
+4. Add `identify` after authentication.
+5. Add server-confirmed events for payment and subscription outcomes.
+6. Review payloads for confidential information before production.
 
 ```bash
 pnpm build

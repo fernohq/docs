@@ -1,0 +1,52 @@
+---
+title: Setup and initialization
+description: Initialize the Ferno browser SDK safely.
+---
+
+## Install
+
+```bash
+npm install @fernohq/analytics-next
+```
+
+## Load immediately
+
+```ts
+import { AnalyticsBrowser } from '@fernohq/analytics-next'
+
+export const analytics = AnalyticsBrowser.load({
+  writeKey: 'ferno_pk_your_project_key',
+})
+```
+
+`writeKey` is required. `load` returns a buffered instance; event methods return promises for dispatched events.
+
+## Load after consent
+
+```ts
+export const analytics = new AnalyticsBrowser()
+
+analytics.track('Opened onboarding page') // buffered; no network request yet
+
+if (userConsentedToAnalytics) {
+  analytics.load({ writeKey: 'ferno_pk_your_project_key' })
+}
+```
+
+Call `.load()` once. Use `disableClientPersistence: true` when browser identity must not be stored.
+
+## Settings
+
+`AnalyticsBrowser.load(settings, options)` accepts:
+
+- `settings.writeKey`: required Ferno project key.
+- `settings.cdnSettings`: settings object that avoids fetching remote settings.
+- `settings.plugins`: installed plugins.
+- `settings.classicIntegrations`: legacy integrations.
+- `options.instrumentation`: opt-in instrumentation configuration.
+- `options.disableClientPersistence`: disable cookies/local storage.
+- `options.initialPageview`: configure initial page-view behavior.
+- `options.integrations`: integration overrides.
+- `options.cookie` and `options.storage`: persistence configuration.
+
+For a custom API proxy, configure the Segment-compatible integration with `apiHost`, `apiPath`, `authMode`, and delivery settings.

@@ -12,14 +12,33 @@ npm install @fernohq/analytics-next
 ```ts
 import { AnalyticsBrowser } from '@fernohq/analytics-next'
 
-export const analytics = AnalyticsBrowser.load({
-  writeKey: import.meta.env.VITE_FERNO_WRITE_KEY,
-})
+const writeKey = import.meta.env.VITE_FERNO_WRITE_KEY
 
+export const analytics = AnalyticsBrowser.load({
+  writeKey,
+  cdnSettings: {
+    integrations: {
+      'Segment.io': {
+        apiKey: writeKey,
+        apiHost: 'data.useferno.com',
+        apiPath: '/events',
+        authMode: 'bearer',
+        retryQueue: true,
+      },
+    },
+  },
+})
+```
+
+For Vite, `import.meta.env.VITE_FERNO_WRITE_KEY` reads the browser/project write key. The explicit `cdnSettings` ensures events use Ferno's `/events` endpoint without remote settings discovery.
+
+Before adding broader instrumentation, send one first event and verify it in the browser Network panel:
+
+```ts
 analytics.track('Opened pricing page', { source: 'navigation' })
 ```
 
-The browser key is intended for client-side use. Do not put a secret server credential in browser code.
+Confirm the POST request reaches `/events` and returns a successful HTTP response. Surface rejected SDK promises during development; console logs alone do not prove delivery. Do not put a secret server credential in browser code.
 
 ## Node
 

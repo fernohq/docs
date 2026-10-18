@@ -34,4 +34,6 @@ SDK masking does not replace data minimization. Never send passwords, secrets, a
 
 Avoid user-entered content by default: form values, search queries, chat messages, prompts, free-text fields, raw sensitive URLs, and exception messages containing request data.
 
-Prefer IDs, booleans, enums, counts, coarse categories, and status codes. Review browser and Node payloads before production and use separate project keys for environments.
+Use browser/project write keys only in frontend code. Keep Node/server keys server-side. In Vite, browser environment variables require the `VITE_` prefix, such as `VITE_FERNO_WRITE_KEY`; this does not make a server key safe to expose. Never place credentials or user-entered content in event payloads.
+
+Prefer IDs, booleans, enums, counts, coarse categories, and status codes. Review browser and Node payloads before production and use separate development and production keys.

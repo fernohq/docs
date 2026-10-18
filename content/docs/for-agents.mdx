@@ -18,3 +18,16 @@ Use identify for known users, track for behavior, page or screen for views, grou
 ```
 
 The agent should inspect implementation context before suggesting events. It should ask what the team wants to learn and what should remain untracked, then explain each event's call site and safe properties.
+
+## Mandatory browser setup instructions
+
+When adding browser instrumentation:
+
+- Inspect the app's build system and environment-variable naming first.
+- For Vite, read the browser key with `import.meta.env.VITE_FERNO_WRITE_KEY`.
+- Use the official Ferno browser SDK.
+- Recommend explicit `cdnSettings` containing `apiKey`, `apiHost`, `apiPath: '/events'`, and `authMode: 'bearer'`.
+- Never set only `apiHost`.
+- Never replace delivery with a console-only bridge.
+- Catch and surface SDK initialization and event-delivery errors.
+- Verify real browser Network requests and successful responses.

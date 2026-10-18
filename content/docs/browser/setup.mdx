@@ -14,12 +14,29 @@ npm install @fernohq/analytics-next
 ```ts
 import { AnalyticsBrowser } from '@fernohq/analytics-next'
 
+const writeKey = import.meta.env.VITE_FERNO_WRITE_KEY
+
 export const analytics = AnalyticsBrowser.load({
-  writeKey: 'ferno_pk_your_project_key',
+  writeKey,
+  cdnSettings: {
+    integrations: {
+      'Segment.io': {
+        apiKey: writeKey,
+        apiHost: 'data.useferno.com',
+        apiPath: '/events',
+        authMode: 'bearer',
+        retryQueue: true,
+      },
+    },
+  },
 })
 ```
 
-`writeKey` is required. `load` returns a buffered instance; event methods return promises for dispatched events.
+`writeKey` is the project browser write key. The Segment-compatible delivery integration uses the same project key as `apiKey`, Ferno's data host as `apiHost`, and `/events` as `apiPath`. `authMode: 'bearer'` selects bearer authorization, and `retryQueue: true` preserves retry behavior.
+
+> **Important:** If `apiHost` is set without `apiPath`, the SDK may derive a type-based path instead of `/events`, causing delivery failures.
+
+The explicit `cdnSettings` object prevents initialization from depending on remote settings discovery. `load` returns a buffered instance; event methods return promises for dispatched events.
 
 ## Load after consent
 
@@ -29,7 +46,22 @@ export const analytics = new AnalyticsBrowser()
 analytics.track('Opened onboarding page') // buffered; no network request yet
 
 if (userConsentedToAnalytics) {
-  analytics.load({ writeKey: 'ferno_pk_your_project_key' })
+  const writeKey = import.meta.env.VITE_FERNO_WRITE_KEY
+
+  analytics.load({
+    writeKey,
+    cdnSettings: {
+      integrations: {
+        'Segment.io': {
+          apiKey: writeKey,
+          apiHost: 'data.useferno.com',
+          apiPath: '/events',
+          authMode: 'bearer',
+          retryQueue: true,
+        },
+      },
+    },
+  })
 }
 ```
 
@@ -50,3 +82,12 @@ Call `.load()` once. Use `disableClientPersistence: true` when browser identity 
 - `options.cookie` and `options.storage`: persistence configuration.
 
 For a custom API proxy, configure the Segment-compatible integration with `apiHost`, `apiPath`, `authMode`, and delivery settings.
+
+## Verify delivery
+
+1. Open the browser developer tools and select the Network panel.
+2. Send a test event and confirm a POST request to Ferno's `/events` endpoint.
+3. Confirm the request has a successful HTTP response.
+4. During development, catch and surface rejected SDK initialization and event promises.
+
+Console logs alone do not prove that an event was delivered.

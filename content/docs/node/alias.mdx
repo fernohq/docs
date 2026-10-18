@@ -12,6 +12,9 @@ analytics.alias({
 
 Ferno reassigns all previous events for `previousId` to `userId`. Use this only for known-ID migration or merging duplicate known accounts:
 
+Most applications do not need to call `alias`; `identify` is sufficient for
+anonymous users, sign-in, session restoration, and account switching.
+
 - Legacy ID to canonical ID migration.
 - Duplicate customer-record merge.
 - Account-model consolidation.

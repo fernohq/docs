@@ -1,34 +1,51 @@
-# My Docs
+# Ferno Documentation
 
-This documentation site was created with [Shiso](https://shiso.umami.is).
+Ferno's SDK documentation site, built with [Shiso](https://shiso.umami.is).
+
+It documents the browser SDK (`@fernohq/analytics-next`), Node SDK (`@fernohq/analytics-node`), event design standards, SDK security, and agent-assisted instrumentation.
 
 ## Development
 
-Install dependencies and start the local development server:
+Requirements: Node.js and pnpm.
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Open the local URL shown in your terminal, then edit
-`content/docs/index.mdx` to start writing.
+Open the local URL shown in the terminal. Content lives in `content/docs`; navigation and site metadata live in `docs.json`.
 
-Site configuration and navigation live in `docs.json`.
+## Documentation structure
 
-## Upgrade Shiso
+- `content/docs/browser/`: Browser SDK setup and feature pages.
+- `content/docs/node/`: Node SDK setup and feature pages.
+- `content/docs/event-standards.mdx`: Event naming and behavior-tracking guidance.
+- `content/docs/security.mdx`: SDK protections and secure usage guidance.
+- `content/docs/for-agents.mdx`: Copyable prompt for planning instrumentation.
+- `public/llm.txt`: Concise LLM-readable documentation index.
 
-Shiso is installed as a regular project dependency. Upgrade it independently
-of this starter with:
+## Validate
+
+Check content and navigation:
 
 ```bash
-pnpm update @umami/shiso
+pnpm check
 ```
 
-## Production
+Build and prerender the site:
 
 ```bash
 pnpm build
 ```
 
-Deploy the generated `dist/client` directory to your static host.
+The build outputs `dist/client`. Deploy that directory to the configured static host.
+
+## Updating Shiso
+
+Shiso is a regular dependency and can be upgraded independently:
+
+```bash
+pnpm update @umami/shiso
+```
+
+Run `pnpm check` and `pnpm build` after dependency upgrades.

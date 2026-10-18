@@ -4,12 +4,12 @@ Ferno provides browser and Node SDKs for product analytics. Use the SDKs to trac
 
 ## Documentation
 
-- https://docs.useferno.com/docs/getting-started
-- https://docs.useferno.com/docs/event-standards
-- https://docs.useferno.com/docs/browser/setup
-- https://docs.useferno.com/docs/node/setup
-- https://docs.useferno.com/docs/security
-- https://docs.useferno.com/docs/for-agents
+- https://docs.useferno.com/getting-started
+- https://docs.useferno.com/event-standards
+- https://docs.useferno.com/browser/setup
+- https://docs.useferno.com/node/setup
+- https://docs.useferno.com/security
+- https://docs.useferno.com/for-agents
 
 ## SDKs
 

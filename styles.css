@@ -1,1 +1,101 @@
-/* Add site-specific CSS overrides here. */
+/* Ferno docs theme: shared with the marketing site. */
+
+:root {
+  --font-sans: "Avenir Next", Avenir, Figtree, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: "Avenir Next", Avenir, Figtree, "Helvetica Neue", Arial, sans-serif;
+  --font-body-weight: 400;
+  --font-heading-weight: 600;
+  --radius: 0.75rem;
+
+  --foreground: #111513;
+  --card: #fbfaf5;
+  --card-foreground: #111513;
+  --popover: #fbfaf5;
+  --popover-foreground: #111513;
+  --primary: #cb4a28;
+  --primary-foreground: #ffffff;
+  --secondary: #dceee9;
+  --secondary-foreground: #075c54;
+  --muted: #e7e2d7;
+  --muted-foreground: #626964;
+  --accent: #dceee9;
+  --accent-foreground: #075c54;
+  --destructive: #bd4322;
+  --border: #cbc7bb;
+  --input: #b8b4aa;
+  --ring: #e85f3b;
+  --chart-1: #087f72;
+  --chart-2: #e85f3b;
+  --chart-3: #075c54;
+  --chart-4: #cb4a28;
+  --chart-5: #626964;
+  --sidebar: #fbfaf5;
+  --sidebar-foreground: #111513;
+  --sidebar-primary: #cb4a28;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dceee9;
+  --sidebar-border: #cbc7bb;
+  --sidebar-ring: #e85f3b;
+}
+
+[data-theme="dark"] {
+  --foreground: #f3f0e7;
+  --card: #141c19;
+  --card-foreground: #f3f0e7;
+  --popover: #141c19;
+  --popover-foreground: #f3f0e7;
+  --primary: #ff8b69;
+  --primary-foreground: #101714;
+  --secondary: #1c2723;
+  --secondary-foreground: #dceee9;
+  --muted: #1c2723;
+  --muted-foreground: #aeb7b0;
+  --accent: #1c2723;
+  --accent-foreground: #dceee9;
+  --destructive: #ff8b69;
+  --border: #2c3833;
+  --input: #3a4740;
+  --ring: #ff8b69;
+  --chart-1: #2bb3a3;
+  --chart-2: #e85f3b;
+  --chart-3: #79bbae;
+  --chart-4: #ff8b69;
+  --chart-5: #aeb7b0;
+  --sidebar: #101714;
+  --sidebar-foreground: #f3f0e7;
+  --sidebar-primary: #ff8b69;
+  --sidebar-primary-foreground: #101714;
+  --sidebar-accent: #1c2723;
+  --sidebar-border: #2c3833;
+  --sidebar-ring: #ff8b69;
+}
+
+body {
+  background: var(--background);
+}
+
+a {
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+}
+
+.docs-markdown a:not(:where(.not-prose, .not-prose *)) {
+  color: var(--primary);
+}
+
+.docs-markdown a:hover:not(:where(.not-prose, .not-prose *)) {
+  color: #bd4322;
+}
+
+.docs-markdown code:not(pre code):not(:where(.not-prose, .not-prose *)) {
+  color: var(--secondary-foreground);
+  background: color-mix(in srgb, var(--secondary) 72%, transparent);
+}
+
+.docs-markdown blockquote:not(:where(.not-prose, .not-prose *)) {
+  border-left-color: var(--primary);
+}
+
+::selection {
+  color: var(--foreground);
+  background: #e85f3b;
+}

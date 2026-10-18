@@ -3,8 +3,22 @@
   "theme": "shiso",
   "name": "Ferno Docs",
   "description": "Ferno SDK documentation.",
-  "logo": "/logo.svg",
+  "logo": {
+    "light": "/logo.svg",
+    "dark": "/logo-dark.svg"
+  },
   "favicon": "/logo.svg",
+  "colors": {
+    "primary": "#cb4a28",
+    "light": "#ff8b69",
+    "dark": "#bd4322"
+  },
+  "background": {
+    "color": {
+      "light": "#f3f0e7",
+      "dark": "#101714"
+    }
+  },
   "contextual": {
     "options": ["copy", "view"]
   },

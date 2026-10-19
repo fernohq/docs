@@ -24,26 +24,129 @@ Call `track` when a meaningful action occurs: a workflow step opens or completes
 Do not call it for every click or keystroke unless opt-in instrumentation is intended. Do not send user-entered content.
 
 ```ts
-analytics.track('Completed education form step', {
+analytics.track("Completed education form step", {
   step: 3,
-  stepName: 'education',
+  stepName: "education",
   validationErrorCount: 0,
-})
+});
 ```
+
+## Track links
+
+```ts
+analytics.trackLink(elements, event, properties?, options?)
+```
+
+Use `trackLink` to record a meaningful link click while preserving normal navigation. It binds tracking to existing link elements; it is not a CSS-selector-based click listener.
+
+Unlike regular `track`, `trackLink` delays the browser's normal navigation by up to 500 ms while the `track` request completes or times out. This gives the event time to reach its destination before a fast redirect or page unload interrupts delivery. Use regular `track` for actions already handled by application code; use `trackLink` when the browser's default link navigation could unload the page immediately.
+
+`elements` must be a DOM element, an array of DOM elements, or a jQuery-like collection. `event` is an event name or a function receiving the element and returning an event name. `properties` is an optional object or function receiving the element and returning an object. `options` uses the same options as `track`.
+
+Pass elements, not CSS selectors. The helper binds a click handler to each element.
+
+```ts
+const link = document.querySelector<HTMLAnchorElement>("#pricing-link");
+
+if (link) {
+  analytics.trackLink(link, "Opened pricing page", {
+    source: "navigation",
+  });
+}
+```
+
+In React, use a ref because `trackLink` requires the DOM element:
+
+```tsx
+import { useEffect, useRef } from "react";
+import { analytics } from "./analytics";
+
+export function PricingLink() {
+  const linkRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    if (linkRef.current) {
+      void analytics.trackLink(linkRef.current, "Opened pricing page", {
+        source: "navigation",
+      });
+    }
+  }, []);
+
+  return (
+    <a ref={linkRef} href="/pricing">
+      Pricing
+    </a>
+  );
+}
+```
+
+On a normal navigation, the helper prevents the default action, sends the `track` event, then continues navigation when tracking resolves or the timeout expires. Links opened in a new tab are not delayed.
+
+## Track forms
+
+```ts
+analytics.trackForm(forms, event, properties?, options?)
+```
+
+Use `trackForm` to record a meaningful form submission while allowing the form to continue submitting after tracking. It binds tracking to existing form elements.
+
+Similar to `trackLink`, `trackForm` delays the browser's default form submission by up to 500 ms while the `track` request completes or times out. This gives the event time to reach its destination before navigation or page unload interrupts delivery. Use regular `track` for submissions already handled by application code; use `trackForm` when the browser's default submission could unload the page immediately.
+
+`forms` must be a form DOM element, an array of form elements, or a jQuery-like collection. `event`, `properties`, and `options` work like they do for `trackLink`. Pass elements, not CSS selectors.
+
+The helper prevents the default submission, sends the `track` event, then submits the form when tracking resolves or the timeout expires. Do not put passwords, payment data, or raw form values in `properties`; send only safe metadata.
+
+```ts
+const form = document.querySelector<HTMLFormElement>("#signup-form");
+
+if (form) {
+  analytics.trackForm(form, "Submitted signup form", {
+    form: "signup",
+  });
+}
+```
+
+In React, use a ref:
+
+```tsx
+import { useEffect, useRef } from "react";
+import { analytics } from "./analytics";
+
+export function SignupForm() {
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (formRef.current) {
+      void analytics.trackForm(formRef.current, "Submitted signup form", {
+        form: "signup",
+      });
+    }
+  }, []);
+
+  return (
+    <form ref={formRef} id="signup-form" action="/signup" method="post">
+      <input name="email" type="email" />
+      <button type="submit">Sign up</button>
+    </form>
+  );
+}
+```
+
+The default wait timeout is 500 ms. Configure the SDK timeout when a different maximum delay is appropriate, for example `analytics.timeout(1000)`.
 
 ## Payment funnel
 
 ```ts
-analytics.track('Opened checkout page', { plan: 'pro' })
-analytics.track('Attempted payment on checkout page', {
-  plan: 'pro',
-  provider: 'stripe',
-})
-analytics.track('Payment failed on checkout page', {
-  plan: 'pro',
-  provider: 'stripe',
-  failureCode: 'card_declined',
-})
+analytics.track("Opened checkout page", { plan: "pro" });
+analytics.track("Attempted payment on checkout page", {
+  plan: "pro",
+  provider: "stripe",
+});
+analytics.track("Payment failed on checkout page", {
+  plan: "pro",
+  provider: "stripe",
+  failureCode: "card_declined",
+});
 ```
 
 Use a backend event for authoritative payment success when possible.
@@ -52,13 +155,13 @@ Use a backend event for authoritative payment success when possible.
 
 ```ts
 await analytics.track(
-  'Opened pricing page',
-  { source: 'navigation' },
+  "Opened pricing page",
+  { source: "navigation" },
   {
-    context: { page: { path: '/pricing', title: 'Pricing' } },
+    context: { page: { path: "/pricing", title: "Pricing" } },
     integrations: { All: true },
   },
-)
+);
 ```
 
 ## Normalized payload

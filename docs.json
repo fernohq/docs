@@ -27,7 +27,12 @@
       {
         "group": "Getting started",
         "collapsible": false,
-        "pages": ["index", "getting-started", "event-standards"]
+        "pages": [
+          "index",
+          { "page": "api-keys", "title": "API keys" },
+          "getting-started",
+          "event-standards"
+        ]
       },
       {
         "group": "Browser SDK",

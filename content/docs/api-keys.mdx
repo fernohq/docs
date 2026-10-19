@@ -1,0 +1,30 @@
+---
+title: Create an API key
+description: Create the project write key the SDKs use to send events.
+---
+
+Every Ferno project has its own API keys. The SDKs send events with a key as their `writeKey`, so you need one before you install either SDK. Only workspace admins can create keys.
+
+## Create a key
+
+1. In the Ferno app sidebar, under **Manage**, open **API keys**.
+2. Choose your project from the **Project** menu.
+3. In **Provision key**, enter a name for where the key will run, such as `Web app` or `Server`, then select **Create API key**.
+4. Select **Copy key** and store it somewhere safe. Ferno shows the full key only once.
+
+If you are setting up a new project, **Continue to create API key** on the **Connect** step opens this page for you.
+
+<Tip>
+  Keys start with `ferno_pk_`. Each name can be used once per project, so give every environment its own key.
+</Tip>
+
+## Use the key
+
+Keep the key out of source control and read it from an environment variable:
+
+- Browser SDK: `VITE_FERNO_WRITE_KEY` (or your bundler's equivalent). See [Browser setup](/browser/setup).
+- Node SDK: `FERNO_WRITE_KEY`. See [Node setup](/node/setup).
+
+## Revoke a key
+
+On **API keys**, select **Revoke** next to the key, then **Confirm**. Events sent with a revoked key are rejected, so create and deploy a replacement first.

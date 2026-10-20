@@ -9,10 +9,12 @@ description: Migrate events from one known ID to another known ID.
 analytics.alias(newKnownId, oldKnownId?, options?, callback?)
 ```
 
-- `newKnownId`: canonical known user ID.
-- `oldKnownId`: previous known user ID.
-- `options`: optional context, timestamp, integrations, or message ID.
-- `callback`: optional dispatch callback.
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `newKnownId` | `true` | `string` | The new canonical known user ID. |
+| `oldKnownId` | `false` | `string` | The previous known user ID. When omitted, the SDK uses the current anonymous or known identity as appropriate. |
+| `options` | `false` | `object` | Call options, including context, timestamp, integration controls, or a message ID. |
+| `callback` | `false` | `function` | Runs after dispatch processing. It may not execute if a device-mode library is blocked from loading. |
 
 ## Backend behavior
 

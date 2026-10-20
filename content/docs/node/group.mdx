@@ -4,6 +4,8 @@ description: Associate a user with an organization or account.
 ---
 
 ```ts
+analytics.group(params, callback?)
+
 analytics.group({
   userId: 'user-123',
   groupId: 'workspace-456',
@@ -11,7 +13,18 @@ analytics.group({
 })
 ```
 
-`groupId` and either `userId` or `anonymousId` are required. Use safe organization attributes such as plan, seat count, industry, or lifecycle state.
+Use `group` to associate a user with an organization, workspace, team, or account. This makes organization-level reporting possible, such as comparing usage by plan, industry, seat count, or lifecycle stage. `groupId` and either `userId` or `anonymousId` are required.
+
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `groupId` | `true` | `string` | Identifies the organization, workspace, team, or account. |
+| `userId` or `anonymousId` | `true` | `string` | Identifies the user associated with the group. At least one is required. |
+| `traits` | `false` | `object` | Safe attributes describing the group, such as plan, seat count, industry, or lifecycle state. |
+| `context` | `false` | `object` | Additional context about the group event. |
+| `timestamp` | `false` | `string \| Date` | The time the group association occurred. |
+| `integrations` | `false` | `object` | Per-call destination controls that enable or disable specific integrations. |
+| `messageId` | `false` | `string` | An application-provided identifier used to deduplicate the group event. |
+| `callback` | `false` | `function` | Runs after dispatch processing. |
 
 Optional fields are `context`, `timestamp`, `integrations`, and `messageId`. The callback is the second argument.
 

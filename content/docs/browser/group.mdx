@@ -9,20 +9,24 @@ description: Associate a user with an organization or account.
 analytics.group(groupId, traits?, options?, callback?)
 ```
 
-- `groupId`: required organization, workspace, or account ID.
-- `traits`: optional safe group attributes.
-- `options`: optional identity, context, timestamp, and integration settings.
-- `callback`: optional dispatch callback.
+Use `group` when you want to analyze behavior at the organization, workspace, team, or account level. Associate the current user with a group, then add safe group traits such as plan, seat count, industry, or lifecycle stage. Do not use it to store arbitrary customer input or sensitive data.
+
+| Field      | Required | Type       | Description                                                                                                                                                                                  |
+| ---------- | -------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `groupId`  | `true`   | `string`   | Identifies the organization, workspace, team, or account.                                                                                                                                    |
+| `traits`   | `false`  | `object`   | A dictionary of safe attributes describing the group, such as plan, seat count, industry, address, website, and employees.                                                                   |
+| `options`  | `false`  | `object`   | A dictionary of options, including user identity, context, timestamp, and integration settings. Note: If you do not pass a properties object, pass an empty object (like '') before options. |
+| `callback` | `false`  | `function` | Runs after dispatch processing. It may not execute if a device-mode library is blocked from loading.                                                                                         |
+
+By default, Ferno caches group traits in the browser's local storage and attaches them to each Group call, similar to how the Identify method works.
 
 ```ts
-analytics.group('workspace-456', {
-  plan: 'business',
+analytics.group("workspace-456", {
+  plan: "business",
   seatCount: 12,
-  industry: 'software',
-})
+  industry: "software",
+});
 ```
-
-Use `group` when organization-level analysis matters. Do not use it to store arbitrary customer input.
 
 ```json
 {

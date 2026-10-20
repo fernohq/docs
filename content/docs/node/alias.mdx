@@ -4,6 +4,8 @@ description: Migrate events from one known ID to another known ID.
 ---
 
 ```ts
+analytics.alias(params, callback?)
+
 analytics.alias({
   userId: 'canonical-user-123',
   previousId: 'legacy-user-456',
@@ -11,6 +13,16 @@ analytics.alias({
 ```
 
 Ferno reassigns all previous events for `previousId` to `userId`. Use this only for known-ID migration or merging duplicate known accounts:
+
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `userId` | `true` | `string` | The new canonical user ID to associate with the previous ID. |
+| `previousId` | `true` | `string` | The prior user or anonymous ID whose events should be reassigned. |
+| `context` | `false` | `object` | Additional context about the identity migration. |
+| `timestamp` | `false` | `string \| Date` | The time the alias operation occurred. |
+| `integrations` | `false` | `object` | Per-call destination controls that enable or disable specific integrations. |
+| `messageId` | `false` | `string` | An application-provided identifier used to deduplicate the alias event. |
+| `callback` | `false` | `function` | Runs after dispatch processing. |
 
 Most applications do not need to call `alias`; `identify` is sufficient for
 anonymous users, sign-in, session restoration, and account switching.

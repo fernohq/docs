@@ -3,6 +3,10 @@ title: page
 description: Record browser page views.
 ---
 
+The Page method lets you record page views on your website, along with optional extra information about the page viewed by the user.
+
+Because some destinations require a Page call to instantiate their libraries, you must call page() at least once per page load. You can call it more than once if needed, for example, on virtual page changes in a single page app.
+
 ## Signatures
 
 ```ts
@@ -10,10 +14,16 @@ analytics.page(name?, properties?, options?, callback?)
 analytics.page(category, name, properties?, options?, callback?)
 ```
 
-`category` groups related pages; `name` identifies the page; `properties` contains safe page metadata; `options` contains identity, context, and integrations.
+| Field        | Required | Type       | Description                                                                                                                                                                                          |
+| ------------ | -------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `category`   | `false`  | `string`   | The category of the page. Useful when many pages belong to one category, such as ecommerce pages. If you pass only one string to `page`, it is treated as `name`; include `name` to send a category. |
+| `name`       | `false`  | `string`   | The name of the page.                                                                                                                                                                                |
+| `properties` | `false`  | `object`   | A dictionary of page properties. Ferno automatically collects the URL, title, referrer, and path. The URL defaults to a canonical URL when available and falls back to `document.location.href`.     |
+| `options`    | `false`  | `object`   | A dictionary of call options, such as enabling or disabling specific destinations. If you omit `properties`, pass an empty object before `options`.                                                  |
+| `callback`   | `false`  | `function` | Runs after a 300 ms timeout, giving the browser time to make outbound requests. It might not execute if a device-mode library is blocked from loading.                                               |
 
 ```ts
-analytics.page('Marketing', 'Pricing', { planCount: 3 })
+analytics.page("Marketing", "Pricing", { planCount: 3 });
 ```
 
 Use manual `page` calls for route changes that automatic navigation does not cover. Do not put query-string secrets, user-entered search text, or sensitive page content in properties.
@@ -26,6 +36,24 @@ Use manual `page` calls for route changes that automatic navigation does not cov
   "properties": { "planCount": 3 },
   "messageId": "generated-by-sdk"
 }
+```
+
+Default page properties
+Ferno adds properties to each Page call.
+
+```ts
+analytics.page("Pricing");
+```
+
+Ferno adds the following information:
+
+```ts
+analytics.page("Pricing", {
+  title: "Ferno Pricing",
+  url: "https://ferno.com/pricing",
+  path: "/pricing",
+  referrer: "https://ferno.com/warehouses",
+});
 ```
 
 The page resolver also accepts `page(properties)`, `page(name, properties)`, and `page(category, name, properties, options, callback)`.

@@ -13,7 +13,20 @@ analytics.page({
 })
 ```
 
-`PageParams` accepts optional `category`, `name`, `properties`, `timestamp`, `context`, `integrations`, and `messageId`, plus `userId` or `anonymousId`. Keep URLs and page properties free of secrets and raw user input.
+`PageParams` fields:
+
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `category` | `false` | `string` | The category of the page. Useful when many pages belong to one category, such as ecommerce pages. |
+| `name` | `false` | `string` | The name of the page. |
+| `properties` | `false` | `object` | A dictionary of page properties. Keep values free of secrets and raw user input. |
+| `timestamp` | `false` | `string \| Date` | The time the page view occurred. |
+| `context` | `false` | `object` | Additional context about the page view, such as its source. |
+| `integrations` | `false` | `object` | Per-call destination controls that enable or disable specific integrations. |
+| `messageId` | `false` | `string` | An application-provided identifier used to deduplicate the page event. |
+| `userId` or `anonymousId` | `false` | `string` | Identifies the user associated with the page view. |
+
+Keep URLs and page properties free of secrets and raw user input.
 
 ```json
 {

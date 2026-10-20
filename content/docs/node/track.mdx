@@ -11,14 +11,16 @@ analytics.track(params, callback?)
 
 `params` contains:
 
-- `event`: required event name.
-- `userId` or `anonymousId`: at least one is required.
-- `properties`: optional behavior/outcome data.
-- `context`: optional extra context.
-- `timestamp`: optional event time.
-- `integrations`: optional destination controls.
-- `messageId`: optional deduplication ID.
-- `callback`: optional callback after dispatch processing.
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `event` | `true` | `string` | Event name. |
+| `userId` or `anonymousId` | `true` | `string` | At least one identity is required. |
+| `properties` | `false` | `object` | Behavior or outcome data. |
+| `context` | `false` | `object` | Extra context. |
+| `timestamp` | `false` | `string \| Date` | Event time. |
+| `integrations` | `false` | `object` | Destination controls. |
+| `messageId` | `false` | `string` | Deduplication ID. |
+| `callback` | `false` | `function` | Callback after dispatch processing. |
 
 ```ts
 analytics.track({

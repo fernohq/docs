@@ -10,10 +10,12 @@ analytics.track(eventName, properties?, options?, callback?)
 analytics.track({ event, properties }, options?, callback?)
 ```
 
-- `eventName` or `event`: required string.
-- `properties`: optional plain object describing behavior or outcome.
-- `options`: optional object containing `userId`, `anonymousId`, `context`, `timestamp`, `integrations`, `messageId`, or extra context fields.
-- `callback`: optional function receiving the dispatched context.
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `eventName` or `event` | `true` | `string` | Event name. |
+| `properties` | `false` | `object` | Behavior or outcome data. |
+| `options` | `false` | `object` | Contains identity, context, timestamp, integration, message ID, or extra context fields. |
+| `callback` | `false` | `function` | Receives the dispatched context. |
 
 The object form is also supported. `properties` defaults to `{}`. A missing event name throws `Event missing`.
 
@@ -41,7 +43,12 @@ Use `trackLink` to record a meaningful link click while preserving normal naviga
 
 Unlike regular `track`, `trackLink` delays the browser's normal navigation by up to 500 ms while the `track` request completes or times out. This gives the event time to reach its destination before a fast redirect or page unload interrupts delivery. Use regular `track` for actions already handled by application code; use `trackLink` when the browser's default link navigation could unload the page immediately.
 
-`elements` must be a DOM element, an array of DOM elements, or a jQuery-like collection. `event` is an event name or a function receiving the element and returning an event name. `properties` is an optional object or function receiving the element and returning an object. `options` uses the same options as `track`.
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `elements` | `true` | `Element \| Element[] \| jQuery-like collection` | DOM element collection to bind. |
+| `event` | `true` | `string \| function` | Event name, or function receiving the element and returning an event name. |
+| `properties` | `false` | `object \| function` | Properties, or function receiving the element and returning properties. |
+| `options` | `false` | `object` | Same options as `track`. |
 
 Pass elements, not CSS selectors. The helper binds a click handler to each element.
 
@@ -92,7 +99,14 @@ Use `trackForm` to record a meaningful form submission while allowing the form t
 
 Similar to `trackLink`, `trackForm` delays the browser's default form submission by up to 500 ms while the `track` request completes or times out. This gives the event time to reach its destination before navigation or page unload interrupts delivery. Use regular `track` for submissions already handled by application code; use `trackForm` when the browser's default submission could unload the page immediately.
 
-`forms` must be a form DOM element, an array of form elements, or a jQuery-like collection. `event`, `properties`, and `options` work like they do for `trackLink`. Pass elements, not CSS selectors.
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `forms` | `true` | `HTMLFormElement \| HTMLFormElement[] \| jQuery-like collection` | Form elements to bind. |
+| `event` | `true` | `string \| function` | Event name or function, as with `trackLink`. |
+| `properties` | `false` | `object \| function` | Properties or function, as with `trackLink`. |
+| `options` | `false` | `object` | Options, as with `trackLink`. |
+
+Pass elements, not CSS selectors.
 
 The helper prevents the default submission, sends the `track` event, then submits the form when tracking resolves or the timeout expires. Do not put passwords, payment data, or raw form values in `properties`; send only safe metadata.
 

@@ -1,0 +1,152 @@
+---
+title: Utility methods
+description: Control Browser SDK loading, readiness, diagnostics, events, and dispatch timing.
+---
+
+The Ferno Browser SDK follows the Segment-compatible Analytics.js API for these lifecycle and utility methods. Use them to control initialization and troubleshoot delivery without changing the events your application sends.
+
+## `AnalyticsBrowser.load`
+
+```ts
+AnalyticsBrowser.load(settings, options?): AnalyticsBrowser
+analytics.load(settings, options?): AnalyticsBrowser
+```
+
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `settings` | `true` | `AnalyticsBrowserSettings` | Ferno project settings, including `writeKey`; may include `cdnSettings` and plugins. |
+| `settings.writeKey` | `true` | `string` | Ferno browser write key. |
+| `settings.cdnSettings` | `false` | `object` | Explicit delivery settings, such as the Segment-compatible integration configuration. |
+| `settings.plugins` | `false` | `Plugin[]` | Plugins to register during initialization. |
+| `options` | `false` | `InitOptions` | Initialization options such as persistence, page-view, integration, cookie, and storage settings. |
+
+`AnalyticsBrowser.load` is the static form. The instance form is useful when an app must create the buffered instance before consent is known:
+
+```ts
+import { AnalyticsBrowser } from '@fernohq/analytics-next'
+
+const writeKey = import.meta.env.VITE_FERNO_WRITE_KEY
+const settings = {
+  writeKey,
+  cdnSettings: {
+    integrations: {
+      'Segment.io': {
+        apiKey: writeKey,
+        apiHost: 'data.useferno.com',
+        apiPath: '/events',
+        authMode: 'bearer',
+        retryQueue: true,
+      },
+    },
+  },
+}
+
+export const analytics = AnalyticsBrowser.load(settings)
+// Equivalent instance form:
+// export const analytics = new AnalyticsBrowser().load(settings)
+```
+
+Call `load` once for an instance. Initialization loads settings and destinations, flushes calls buffered before initialization, and makes the SDK ready for dispatch. Calls such as `track` and `page` made before loading are buffered; they do not send a network request until loading starts.
+
+For consent-gated loading, create the instance first and call `load` only after consent:
+
+```ts
+export const analytics = new AnalyticsBrowser()
+
+analytics.track('Opened onboarding page') // buffered
+
+if (userConsentedToAnalytics) {
+  analytics.load({ writeKey: import.meta.env.VITE_FERNO_WRITE_KEY })
+}
+```
+
+Use `disableClientPersistence: true` in `options` when the browser identity must not be stored. See [setup and initialization](/browser/setup) for Ferno delivery settings.
+
+## `analytics.ready`
+
+```ts
+analytics.ready(callback?): Promise<unknown[]>
+```
+
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `callback` | `false` | `(results: unknown[]) => void` | Runs after registered destinations and plugins report readiness. Receives their readiness results. |
+
+`ready()` returns a promise that resolves after every registered destination or plugin with a `ready` hook has completed. The promise resolves to an array of those results. The optional callback receives the same array; it is useful when integrating with callback-oriented Analytics.js code.
+
+Wait for readiness before work that depends on a destination or plugin being initialized:
+
+```ts
+await analytics.ready()
+await analytics.track('Opened pricing page', { source: 'navigation' })
+```
+
+## `analytics.debug`
+
+```ts
+analytics.debug(toggle): AnalyticsBrowser
+```
+
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `toggle` | `true` | `boolean` | `true` enables development diagnostics; `false` disables them. |
+
+`debug` is chainable, so it can be configured with other SDK calls:
+
+```ts
+analytics.debug(true).track('Debug checkout opened')
+analytics.debug(false)
+```
+
+Keep diagnostics disabled in production unless you intentionally need them for a controlled investigation. Debug output can include operational event details; do not use it as a substitute for removing sensitive data from payloads.
+
+## `analytics.on`
+
+```ts
+analytics.on(event, callback): AnalyticsBrowser
+analytics.once(event, callback): AnalyticsBrowser
+analytics.off(event, callback): AnalyticsBrowser
+```
+
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `event` | `true` | `string` | Event name to observe, such as `track`, `identify`, `page`, `group`, `alias`, `error`, or a lifecycle event. |
+| `callback` | `true` | `(...args: unknown[]) => void` | Listener invoked with the event's emitted payload. |
+
+`on` registers a listener and returns the analytics instance for chaining. Common events include the tracking methods (`track`, `identify`, `page`, `group`, and `alias`), `error`, and lifecycle events such as `ready`, `reset`, and delivery lifecycle notifications.
+
+Keep listeners observational. Read only the fields needed by the application and never log tokens, passwords, payment data, raw form values, messages, or other sensitive content:
+
+```ts
+const onTrack = (context: { event?: string }) => {
+  if (context.event) {
+    console.info('Ferno event:', context.event)
+  }
+}
+
+analytics.on('track', onTrack)
+
+// Use once for a one-time listener; off removes a registered listener.
+analytics.once('ready', () => console.info('Ferno ready'))
+analytics.off('track', onTrack)
+```
+
+Register listeners before `load` when using the instance form; the Browser SDK buffers supported listeners until initialization.
+
+## `analytics.timeout`
+
+```ts
+analytics.timeout(milliseconds): void
+```
+
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `milliseconds` | `true` | `number` | Maximum dispatch/callback wait in milliseconds. |
+
+Set the timeout when navigation, unload, or a callback needs a different maximum wait:
+
+```ts
+analytics.timeout(1000)
+```
+
+The value is in milliseconds and must be numeric. A larger value gives dispatch and callback handling more time; a smaller value reduces how long browser actions wait. This setting controls SDK dispatch/callback timing. It is not a general network retry or backoff configuration; configure delivery retry behavior separately in the integration settings.

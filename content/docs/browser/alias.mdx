@@ -23,7 +23,7 @@ Ferno reassigns all previous events associated with the old known ID to the new 
 Most applications do not need to call `alias`; `identify` is sufficient for
 anonymous users, sign-in, session restoration, and account switching.
 
-Use it for duplicate customer-record merges, legacy-to-canonical ID migration, account-model consolidation, database imports, or identity repair.
+Use it for duplicate customer-record merges, legacy-to-canonical ID migration, account-model consolidation, database imports, or identity repair. It is not for routine logout, login, or account switching.
 
 ## Do not use after authentication
 
@@ -45,3 +45,6 @@ analytics.alias('canonical-user-123', 'legacy-user-456')
   "messageId": "generated-by-sdk"
 }
 ```
+
+For logout and account switching, track the boundary, call `reset()`, then
+identify the next account after login. See [logout and reset](/browser/logout).

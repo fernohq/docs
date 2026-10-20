@@ -45,7 +45,10 @@
           "browser/screen",
           "browser/group",
           "browser/identity",
-          "browser/instrumentation"
+          "browser/logout",
+          "browser/instrumentation",
+          "browser/utility-methods",
+          "browser/delivery-strategy"
         ]
       },
       {

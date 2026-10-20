@@ -3,7 +3,7 @@ title: Identity, persistence, and reset
 description: Control anonymous and known browser identity.
 ---
 
-The browser SDK persists identity by default using cookies and local storage, with memory fallback behavior. `user()` and `group()` read current state. `reset()` clears current user and group state.
+The browser SDK persists identity by default using cookies and local storage, with memory fallback behavior. `user()` and `group()` read current state. `reset()` clears the current user ID, anonymous ID, traits, and group state.
 
 ```ts
 analytics.reset()
@@ -22,3 +22,5 @@ AnalyticsBrowser.load(
 Choose persistence settings that match consent and privacy requirements.
 
 `user()` and `group()` return the current identity state. The buffered browser instance returns promises for these getters; the initialized analytics instance returns the state directly.
+
+For the full logout sequence and account-switching guidance, see [logout and reset](/browser/logout).

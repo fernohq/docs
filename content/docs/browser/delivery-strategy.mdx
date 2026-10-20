@@ -1,0 +1,151 @@
+---
+title: Delivery strategy
+description: Configure Ferno Browser SDK request headers, keepalive, and batching.
+---
+
+The Ferno Browser SDK sends browser events through the `Segment.io` integration to Ferno's `/events` endpoint. Its `deliveryStrategy` configuration controls how those requests are dispatched.
+
+```ts
+analytics.load(
+  {
+    writeKey: import.meta.env.VITE_FERNO_WRITE_KEY,
+  },
+  {
+    integrations: {
+      'Segment.io': {
+        apiHost: 'data.useferno.com',
+        apiPath: '/events',
+        authMode: 'bearer',
+        deliveryStrategy: {
+          strategy: 'standard',
+          config: {},
+        },
+      },
+    },
+  },
+)
+```
+
+## Configuration
+
+```ts
+deliveryStrategy: {
+  strategy: 'standard' | 'batching',
+  config: {
+    headers?,
+    keepalive?,
+    credentials?,
+    priority?,
+    size?,
+    timeout?,
+    maxRetries?,
+  },
+}
+```
+
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `strategy` | `false` | `'standard' \\| 'batching'` | Request strategy. Standard dispatches events individually; batching groups events into requests. |
+| `config` | `true` | `object` | Fetch and batching settings for Ferno requests. |
+| `config.headers` | `false` | `object \\| function` | Additional request headers. A function is called before each request. |
+| `config.keepalive` | `false` | `boolean` | Allows requests to continue while the page is unloading. Defaults to `false`. |
+| `config.credentials` | `false` | `'include' \\| 'same-origin' \\| 'omit'` | Browser fetch credentials mode. |
+| `config.priority` | `false` | `'high' \\| 'low' \\| 'auto'` | Browser fetch request priority. |
+| `config.size` | `false` | `number` | Batching event-count threshold. Defaults to `10`. |
+| `config.timeout` | `false` | `number` | Batching flush timeout in milliseconds. Defaults to `5000`. |
+| `config.maxRetries` | `false` | `number` | Maximum retries for a batched request. Defaults to `10`. |
+
+## Custom headers
+
+Add headers to Ferno requests with `config.headers`:
+
+```ts
+analytics.load(
+  { writeKey: import.meta.env.VITE_FERNO_WRITE_KEY },
+  {
+    integrations: {
+      'Segment.io': {
+        deliveryStrategy: {
+          config: {
+            headers: {
+              'x-client-label': 'checkout-web',
+            },
+          },
+        },
+      },
+    },
+  },
+)
+```
+
+The SDK supplies the request content type and authorization headers. Custom headers are added to those defaults. If a header is generated dynamically, provide a function:
+
+```ts
+headers: () => ({
+  'x-request-version': String(window.__APP_VERSION__),
+})
+```
+
+Only send non-sensitive metadata in custom headers. The Ferno endpoint and any proxy between your app and Ferno must allow the header through CORS.
+
+## Keepalive
+
+Set `keepalive: true` when events triggered immediately before navigation or page close need the browser to continue the request:
+
+```ts
+analytics.load(
+  { writeKey: import.meta.env.VITE_FERNO_WRITE_KEY },
+  {
+    integrations: {
+      'Segment.io': {
+        deliveryStrategy: {
+          config: {
+            keepalive: true,
+          },
+        },
+      },
+    },
+  },
+)
+```
+
+Keepalive requests share the browser's approximately 64 KB in-flight payload limit. Larger payloads can be dropped, so keepalive is disabled by default. The SDK also uses keepalive while the page is unloading for batched requests and splits oversized batches to reduce loss.
+
+## Batching
+
+Batching groups multiple events into one Ferno request. This reduces request count and makes retries apply to the batch as a unit.
+
+```ts
+analytics.load(
+  { writeKey: import.meta.env.VITE_FERNO_WRITE_KEY },
+  {
+    integrations: {
+      'Segment.io': {
+        apiHost: 'data.useferno.com',
+        apiPath: '/events',
+        authMode: 'bearer',
+        deliveryStrategy: {
+          strategy: 'batching',
+          config: {
+            size: 10,
+            timeout: 5000,
+          },
+        },
+      },
+    },
+  },
+)
+```
+
+Both `size` and `timeout` affect when a batch is sent:
+
+- `size` sends the batch when it reaches the event-count threshold. For example, `size: 10` sends after 10 events.
+- `timeout` sends queued events after the specified number of milliseconds, even when the batch has not reached `size`.
+
+Ferno batches are limited to 500 KB total, with a 32 KB limit per event. The SDK splits a batch when it approaches the total payload limit. Smaller batches or shorter timeouts reduce the amount of queued data at page close, but increase request count.
+
+## Delivery and retries
+
+Batching delays retries until the batch request fails. A failed batch is retried as a unit according to Ferno's HTTP retry and backoff settings. Configure those settings separately with `httpConfig`; `deliveryStrategy.config.timeout` is only the batching flush timeout.
+
+Queued events are best-effort during browser shutdown. Keepalive, smaller batch sizes, and shorter batch timeouts can reduce loss, but no browser can guarantee delivery after a tab closes or a process is terminated.

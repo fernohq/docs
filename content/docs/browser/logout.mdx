@@ -1,0 +1,76 @@
+---
+title: Logout and reset
+description: End a browser identity safely when a user logs out.
+---
+
+Logout is an identity-boundary event. Record the boundary, clear the browser
+identity, and identify the next account only after the next login succeeds.
+
+## Recommended sequence
+
+1. Track `Logged out` with safe, non-sensitive properties.
+2. Call `analytics.reset()`.
+3. After the next login, call `analytics.identify()` for the authenticated account.
+
+```ts
+function handleLogout() {
+  analytics.track("Logged out", { source: "account-menu" });
+  analytics.reset();
+  signOutFromApplication();
+}
+
+async function handleLogin(user: { id: string; plan: string }) {
+  await signInToApplication();
+  analytics.identify(user.id, { plan: user.plan });
+}
+```
+
+Tracking logout is recommended when the event is useful for product analysis,
+but it is not required for every application. Track it before `reset()` because
+`reset()` does not send a logout event to analytics destinations.
+
+## `track` arguments
+
+```ts
+analytics.track(eventName, properties?, options?, callback?)
+```
+
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| `eventName` | `true` | `string` | Event name, such as `Logged out`. |
+| `properties` | `false` | `object` | Safe metadata about the logout, such as its source. |
+| `options` | `false` | `object` | Context, timestamp, integration controls, or message ID. |
+| `callback` | `false` | `function` | Runs after dispatch processing. |
+
+Do not send credentials, tokens, passwords, payment data, or raw user-entered
+data in event properties.
+
+## `reset` API
+
+```ts
+analytics.reset()
+```
+
+| Field | Required | Type | Description |
+| --- | --- | --- | --- |
+| Arguments | `false` | `none` | `reset()` takes no arguments. |
+
+`reset()` clears the current user ID, anonymous ID, traits, group state, and
+the identity stored in cookies or local storage. It also clears the related
+in-memory state. It does not merge, identify, or track a new identity.
+
+## Account switching
+
+When users switch accounts in one browser, reset the previous identity before
+identifying the next account:
+
+```ts
+analytics.track("Logged out", { source: "account-switcher" });
+analytics.reset();
+analytics.identify(nextUser.id, { plan: nextUser.plan });
+```
+
+Do not use `alias` for routine logout, login, or account switching. `alias` is
+for migrating or merging a known ID into another known ID; using it between
+separate accounts would incorrectly combine their histories. See [alias](/browser/alias)
+for migration guidance.

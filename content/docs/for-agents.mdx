@@ -15,6 +15,18 @@ Based on project context, ask which behaviors or data they do not want tracked. 
 Recommend specific event names and descriptions using a reusable event dictionary. Track behavior, workflow steps, outcomes, errors, and status changes—not user inputs. Do not track form values, free text, search terms, messages, prompts, passwords, payment details, or other user-entered content unless the user explicitly asks for it and confirms it is appropriate. Never put user input in event names.
 
 Use identify for known users, track for behavior, page or screen for views, group for organizations, and alias only when migrating or merging one known ID into another. After normal authentication use identify, not alias. Never include confidential information in a payload. Refer to docs.useferno.com for exact SDK arguments, payloads, and security guidance.
+
+Instrumentation is opt-in. Default `instrumentation.autocapture` and
+`instrumentation.navigation` to `false`, and enable either only when the user
+explicitly requests it. Prefer manual `page` or `screen` calls for route views.
+Use `trackLink` for meaningful links and click-driven navigation when the
+browser may navigate away before tracking completes.
+
+Call `identify` on the authenticated entry page or screen immediately reached
+after login. Call `reset` on logout. For a logout link that redirects, bind
+`trackLink` so the logout event can finish before routing, and invoke `reset` in
+the logout handler. Keep existing privacy, consent, and sensitive-data
+requirements in force.
 ```
 
 The agent should inspect implementation context before suggesting events. It should ask what the team wants to learn and what should remain untracked, then explain each event's call site and safe properties.

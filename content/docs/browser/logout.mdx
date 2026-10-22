@@ -29,6 +29,36 @@ Tracking logout is recommended when the event is useful for product analysis,
 but it is not required for every application. Track it before `reset()` because
 `reset()` does not send a logout event to analytics destinations.
 
+## Redirecting logout links
+
+Use `trackLink` when a logout control is a link that redirects or otherwise
+unloads the page. It delays navigation while the logout event completes or
+times out. Register the reset handler with the link so the current identity is
+cleared as part of logout before routing begins:
+
+```ts
+const logoutLink = document.querySelector<HTMLAnchorElement>("#logout");
+
+if (logoutLink) {
+  void analytics.trackLink(logoutLink, "Logged out", {
+    source: "account-menu",
+  });
+
+  logoutLink.addEventListener(
+    "click",
+    () => {
+      analytics.reset();
+    },
+    { once: true },
+  );
+}
+```
+
+Bind `trackLink` before the logout handler: tracking starts with the current
+identity, then the handler resets it, and delayed navigation gives delivery
+time to finish. For logout actions handled entirely by application code without
+navigation, use regular `track`, then call `reset()` in the logout handler.
+
 ## `track` arguments
 
 ```ts
